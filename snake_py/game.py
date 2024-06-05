@@ -9,7 +9,7 @@ class SnakePyGame:
         self.running = True
         self.dt = 0
         self.snake_pos = [pygame.Vector2(self.screen.get_width() / 2, self.screen.get_height() / 2)]
-        self.snake_dir = pygame.Vector2(1, 0)
+        self.snake_dir = pygame.Vector2(1,0)
         self.food_pos = self.get_random_food_position()
         self.score = 0
 
@@ -26,15 +26,14 @@ class SnakePyGame:
         self.clock = pygame.time.Clock()
 
     def get_random_food_position(self):
-        in_snake = True
-        while in_snake == True:
-            in_snake = False
-            pos = pygame.Vector2(random.randint(0, self.screen.get_width() // 20) * 20,
-                                random.randint(0, self.screen.get_height() // 20) * 20)
-            if pos not in self.snake_pos:
+        rep_width = self.screen.get_width()
+        rep_height = self.screen.get_height()
+        while True:
+            pos = pygame.Vector2(random.randint(0, int(rep_width)  // 20) * 20,
+                                random.randint(0, int(rep_height)  // 20) * 20)
+            if pos not in self.snake_pos and pos[0] < rep_width and pos[0] > 0 and pos[1] < rep_height and pos[1] > 0:
+                print('Food position -', pos)
                 return pos
-            else:
-                in_snake = True
 
 
     def handle_events(self):
@@ -85,7 +84,6 @@ class SnakePyGame:
         if new_head == self.food_pos:
             self.snake_pos.append(self.snake_pos[-1])
             self.score += 1
-            
             self.food_pos = self.get_random_food_position()
 
 
