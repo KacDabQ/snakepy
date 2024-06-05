@@ -2,6 +2,7 @@ import random
 import pygame
 
 
+
 class SnakePyGame:
     def __init__(self):
         self._initialize_pygame()
@@ -18,15 +19,23 @@ class SnakePyGame:
         '''
         pygame.init()
         pygame.joystick.init()
-        self.joystick = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-        print(self.joystick)
+        self.joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+        print(self.joysticks)
         self.screen = pygame.display.set_mode((800, 400))
         #self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.clock = pygame.time.Clock()
 
     def get_random_food_position(self):
-        return pygame.Vector2(random.randint(0, self.screen.get_width() // 20) * 20,
-                              random.randint(0, self.screen.get_height() // 20) * 20)
+        in_snake = True
+        while in_snake == True:
+            in_snake = False
+            pos = pygame.Vector2(random.randint(0, self.screen.get_width() // 20) * 20,
+                                random.randint(0, self.screen.get_height() // 20) * 20)
+            if pos not in self.snake_pos:
+                return pos
+            else:
+                in_snake = True
+
 
     def handle_events(self):
         new_events = pygame.event.get()
@@ -34,6 +43,8 @@ class SnakePyGame:
             print(event)
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 self.running = False
+            
+        # Joystick control
             if event.type == pygame.JOYAXISMOTION:
                 if event.axis == 0:
                     if event.value < -0.1:
@@ -46,6 +57,7 @@ class SnakePyGame:
                     elif event.value > 0.1:
                         self.snake_dir = pygame.Vector2(0, 1)
 
+        # Keyboard control
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] and self.snake_dir != pygame.Vector2(0, 1):
             self.snake_dir = pygame.Vector2(0, -1)
@@ -72,8 +84,9 @@ class SnakePyGame:
         # Check for collision with food
         if new_head == self.food_pos:
             self.snake_pos.append(self.snake_pos[-1])
-            self.food_pos = self.get_random_food_position()
             self.score += 1
+            
+            self.food_pos = self.get_random_food_position()
 
 
     def run(self):
